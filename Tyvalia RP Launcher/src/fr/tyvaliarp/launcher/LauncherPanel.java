@@ -60,15 +60,30 @@ public class LauncherPanel extends IScreen {
 	private LauncherLabel currentFileLabel;
 	private LauncherLabel percentageLabel;
 	private LauncherLabel currentStep;
+
+	private Clip music;
 	
 	public LauncherPanel(Pane root, GameEngine engine) {
+		try {
+			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(LauncherPanel.class.getClassLoader().getResource("music.wav"));
+			music = AudioSystem.getClip();
+			music.open(audioInputStream);
+			music.start();
+		} catch (UnsupportedAudioFileException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (LineUnavailableException e) {
+			e.printStackTrace();
+		}
+
 		this.topRectangle = new LauncherRectangle(root, 0, 0, engine.getWidth(), 31);
 		this.topRectangle.setFill(Color.rgb(0, 0, 0, 0.70));
 		
 		this.drawLogo(engine, getResourceLocation().loadImage(engine, "logo.png"), engine.getWidth() / 2 - 165, 100, 330, 100, root, Mover.DONT_MOVE);
 		
 		this.titleLabel = new LauncherLabel(root);
-		this.titleLabel.setText("Tyvalia RP Launcher - 0.3.0d");
+		this.titleLabel.setText("Tyvalia RP Launcher - 0.3.1d");
 		this.titleLabel.setFont(FontLoader.loadFont("Roboto-Light.tff", "Robota Light", 18f));
 		this.titleLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
 		this.titleLabel.setPosition(engine.getWidth() / 2 - 120, -4);
@@ -115,6 +130,7 @@ public class LauncherPanel extends IScreen {
 			} else if (this.usernameField.getText().length() >= 3 && !this.passwordField.getText().isEmpty()) {
 				GameAuth auth = new GameAuth(this.usernameField.getText(), this.passwordField.getText(), AccountType.MOJANG);
 				if (auth.isLogged()) {
+					music.stop();
 					this.update(engine, auth);
 				} else {
 					new LauncherAlert("Connexion échouée", "Identifiants incorrects");
@@ -154,21 +170,6 @@ public class LauncherPanel extends IScreen {
 			}
 		});
 
-		Clip clip = null;
-
-		try {
-			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(LauncherPanel.class.getClassLoader().getResource("music.wav"));
-			clip = AudioSystem.getClip();
-			clip.open(audioInputStream);
-			clip.start();
-		} catch (UnsupportedAudioFileException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (LineUnavailableException e) {
-			e.printStackTrace();
-		}
-
 		this.musicButton = new LauncherButton(root);
 		this.musicButton.setStyle("-fx-background-color: rgba(0, 0, 0, 0.4); -fx-text-fill: white;");
 		LauncherImage musicImg = new LauncherImage(root, getResourceLocation().loadImage(engine, "music-playing.png"));
@@ -176,15 +177,14 @@ public class LauncherPanel extends IScreen {
 		this.musicButton.setGraphic(musicImg);
 		this.musicButton.setPosition(engine.getWidth() - 70, engine.getHeight() - 55);
 		this.musicButton.setSize(60, 45);
-		Clip finalClip = clip;
 		this.musicButton.setAction(event -> {
-			if (finalClip.isRunning()) {
-				finalClip.stop();
+			if (music.isRunning()) {
+				music.stop();
 				LauncherImage tempImg = new LauncherImage(root, getResourceLocation().loadImage(engine, "music-muted.png"));
 				tempImg.setSize(40, 40);
 				musicButton.setGraphic(tempImg);
 			} else {
-				finalClip.start();
+				music.start();
 				LauncherImage tempImg = new LauncherImage(root, getResourceLocation().loadImage(engine, "music-playing.png"));
 				tempImg.setSize(40, 40);
 				musicButton.setGraphic(tempImg);
@@ -268,8 +268,8 @@ public class LauncherPanel extends IScreen {
 		this.passwordField.setVisible(false);
 		this.loginButton.setDisable(true);
 		this.loginButton.setVisible(false);
-		this.settingsButton.setDisable(true);
-		this.settingsButton.setVisible(false);
+		//this.settingsButton.setDisable(true);
+		//this.settingsButton.setVisible(false);
 		
 		this.updateRectangle.setVisible(true);
 		this.updateLabel.setVisible(true);
