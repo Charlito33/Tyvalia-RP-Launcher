@@ -24,7 +24,7 @@ public class LauncherMain extends AlternativeBase {
 	private LauncherPreferences launcherPreferences = new LauncherPreferences("Tyvalia RP Launcher", 950, 600, true);
 	private GameEngine gameEngine = new GameEngine(gameFolder, launcherPreferences, GameVersion.V_1_12_2, GameStyle.FORGE_1_8_TO_1_12_2);
 	private GameLinks gameLinks = new GameLinks("http://charlito33.fr.nf/tyvalia-rp/launcher/", "1.12.2.json");
-	private GameConnect gameConnect = new GameConnect("play.hypixel.net", "25565");
+	private GameConnect gameConnect = new GameConnect("tyvalia-rp.mine.gg", "10004");
 	private GameMaintenance gameMaintenance = new GameMaintenance(Maintenance.USE, gameEngine);
 	private GameMemory gameMemory = GameMemory.RAM_4G;
 	

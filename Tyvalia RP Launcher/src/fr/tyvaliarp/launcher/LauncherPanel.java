@@ -119,14 +119,12 @@ public class LauncherPanel extends IScreen {
 			if (this.usernameField.getText().length() < 3) {
 				new LauncherAlert("Connexion échouée", "La case de l'email doit contenir plus de 3 caractères.");
 			} else if (this.usernameField.getText().length() >= 3 && this.passwordField.getText().isEmpty()) {
-				/*
 				GameAuth auth = new GameAuth(this.usernameField.getText(), this.passwordField.getText(), AccountType.OFFLINE);
 				if (auth.isLogged()) {
+					music.stop();
 					this.update(engine, auth);
 				}
-				*/
-				
-				new LauncherAlert("Connexion échouée", "Les Cracks ne sont pas acceptés !");
+				//new LauncherAlert("Connexion échouée", "Les Cracks ne sont pas acceptés !");
 			} else if (this.usernameField.getText().length() >= 3 && !this.passwordField.getText().isEmpty()) {
 				GameAuth auth = new GameAuth(this.usernameField.getText(), this.passwordField.getText(), AccountType.MOJANG);
 				if (auth.isLogged()) {
