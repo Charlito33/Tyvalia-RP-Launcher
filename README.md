@@ -17,3 +17,6 @@ Launcher officiel de Tyvalia RP
 - 0.3.1d :
   - Patch de la mise à jour qui ne se lance pas
   - Patch de la musique qui continue pendant la MAJ et pendant le jeu
+- 0.4.0d :
+  - Ajout de l'IP du serveur
+  - Ajout de la connexion crack
