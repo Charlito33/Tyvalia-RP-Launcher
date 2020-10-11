@@ -20,3 +20,9 @@ Launcher officiel de Tyvalia RP
 - 0.4.0d :
   - Ajout de l'IP du serveur
   - Ajout de la connexion crack
+- 0.5.0d :
+  - Changement du nom de version dans le titre (Qui n'avais pas été changé en v0.4.0d)
+  - Changement du player de la musique
+  - Ajout d'un slider pour changer le volume de la musique
+  - Le bouton de musique est caché quand on se connecte
+  - Ajout d'un check du pseudo pour éviter les pseudos avec des caractères spéciaux

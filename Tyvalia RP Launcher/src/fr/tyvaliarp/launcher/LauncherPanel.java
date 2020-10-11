@@ -22,7 +22,10 @@ import fr.trxyy.alternative.alternative_api_ui.components.LauncherTextField;
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
+import javafx.scene.control.Slider;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
@@ -47,6 +50,8 @@ public class LauncherPanel extends IScreen {
 	private LauncherButton settingsButton;
 	private LauncherButton websiteButton;
 	private LauncherButton musicButton;
+
+	private Slider musicSlider;
 	
 	private LauncherButton closeButton;
 	private LauncherButton reduceButton;
@@ -61,21 +66,14 @@ public class LauncherPanel extends IScreen {
 	private LauncherLabel percentageLabel;
 	private LauncherLabel currentStep;
 
-	private Clip music;
+	private Media music;
+	private MediaPlayer musicPlayer;
 	
 	public LauncherPanel(Pane root, GameEngine engine) {
-		try {
-			AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(LauncherPanel.class.getClassLoader().getResource("music.wav"));
-			music = AudioSystem.getClip();
-			music.open(audioInputStream);
-			music.start();
-		} catch (UnsupportedAudioFileException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (LineUnavailableException e) {
-			e.printStackTrace();
-		}
+		music = new Media(LauncherPanel.class.getResource("/music.wav").toString());
+		musicPlayer = new MediaPlayer(music);
+		musicPlayer.setVolume(0.5);
+		musicPlayer.play();
 
 		this.topRectangle = new LauncherRectangle(root, 0, 0, engine.getWidth(), 31);
 		this.topRectangle.setFill(Color.rgb(0, 0, 0, 0.70));
@@ -83,7 +81,7 @@ public class LauncherPanel extends IScreen {
 		this.drawLogo(engine, getResourceLocation().loadImage(engine, "logo.png"), engine.getWidth() / 2 - 165, 100, 330, 100, root, Mover.DONT_MOVE);
 		
 		this.titleLabel = new LauncherLabel(root);
-		this.titleLabel.setText("Tyvalia RP Launcher - 0.3.1d");
+		this.titleLabel.setText("Tyvalia RP Launcher - 0.5.0d");
 		this.titleLabel.setFont(FontLoader.loadFont("Roboto-Light.tff", "Robota Light", 18f));
 		this.titleLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
 		this.titleLabel.setPosition(engine.getWidth() / 2 - 120, -4);
@@ -100,7 +98,7 @@ public class LauncherPanel extends IScreen {
 		this.usernameField.setSize(270, 50);
 		this.usernameField.setFont(FontLoader.loadFont("Roboto-Light.tff", "Robota Light", 14f));
 		this.usernameField.setStyle("-fx-background-color: rgba(0, 0, 0, 0.4); -fx-text-fill: white;");
-		this.usernameField.setVoidText("Email");
+		this.usernameField.setVoidText("Pseudo / Email");
 		
 		this.passwordField = new LauncherPasswordField(root);
 		this.passwordField.setPosition(engine.getWidth() / 2 - 135, engine.getHeight() / 2);
@@ -116,19 +114,25 @@ public class LauncherPanel extends IScreen {
 		this.loginButton.setSize(270, 45);
 		this.loginButton.setStyle("-fx-background-color: rgba(0, 0, 0, 0.4); -fx-text-fill: white;");
 		this.loginButton.setAction(event -> {
-			if (this.usernameField.getText().length() < 3) {
-				new LauncherAlert("Connexion échouée", "La case de l'email doit contenir plus de 3 caractères.");
+			if (this.usernameField.getText().length() < 3 || this.usernameField.getText().length() > 16) {
+				new LauncherAlert("Connexion échouée", "La case du pseudo / email doit entre 3 et 16 charactères.");
+			} else if (!NicknameUtils.check(this.usernameField.getText()) && this.passwordField.getText().isEmpty()) {
+				new LauncherAlert("Connexion échouée", "Le pseudo contient des caractères spéciaux.");
 			} else if (this.usernameField.getText().length() >= 3 && this.passwordField.getText().isEmpty()) {
 				GameAuth auth = new GameAuth(this.usernameField.getText(), this.passwordField.getText(), AccountType.OFFLINE);
 				if (auth.isLogged()) {
-					music.stop();
+					musicPlayer.stop();
+					musicButton.setVisible(false);
+					musicSlider.setVisible(false);
 					this.update(engine, auth);
 				}
 				//new LauncherAlert("Connexion échouée", "Les Cracks ne sont pas acceptés !");
 			} else if (this.usernameField.getText().length() >= 3 && !this.passwordField.getText().isEmpty()) {
 				GameAuth auth = new GameAuth(this.usernameField.getText(), this.passwordField.getText(), AccountType.MOJANG);
 				if (auth.isLogged()) {
-					music.stop();
+					musicPlayer.stop();
+					musicButton.setVisible(false);
+					musicSlider.setVisible(false);
 					this.update(engine, auth);
 				} else {
 					new LauncherAlert("Connexion échouée", "Identifiants incorrects");
@@ -176,18 +180,40 @@ public class LauncherPanel extends IScreen {
 		this.musicButton.setPosition(engine.getWidth() - 70, engine.getHeight() - 55);
 		this.musicButton.setSize(60, 45);
 		this.musicButton.setAction(event -> {
-			if (music.isRunning()) {
-				music.stop();
+			if (musicPlayer.getStatus().equals(MediaPlayer.Status.PLAYING)) {
+				musicPlayer.stop();
 				LauncherImage tempImg = new LauncherImage(root, getResourceLocation().loadImage(engine, "music-muted.png"));
 				tempImg.setSize(40, 40);
 				musicButton.setGraphic(tempImg);
 			} else {
-				music.start();
+				musicPlayer.play();
 				LauncherImage tempImg = new LauncherImage(root, getResourceLocation().loadImage(engine, "music-playing.png"));
 				tempImg.setSize(40, 40);
 				musicButton.setGraphic(tempImg);
 			}
 		});
+
+		this.musicSlider = new Slider();
+		this.musicSlider.setMin(0);
+		this.musicSlider.setMax(100);
+		this.musicSlider.setValue(50);
+		/*
+		this.musicSlider.setShowTickLabels(true);
+		this.musicSlider.setShowTickMarks(true);
+		 */
+		this.musicSlider.setBlockIncrement(10);
+		this.musicSlider.setVisible(true);
+		this.musicSlider.setLayoutX(engine.getWidth() - 220);
+		this.musicSlider.setLayoutY(engine.getHeight() - 40);
+
+		this.musicSlider.valueProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				musicPlayer.setVolume(newValue.doubleValue() / 100);
+			}
+		});
+
+		root.getChildren().add(musicSlider);
 		
 		this.closeButton = new LauncherButton(root);
 		this.closeButton.setPosition(engine.getWidth() - 35, 2);
