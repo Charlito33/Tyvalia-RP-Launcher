@@ -7,6 +7,7 @@ import java.net.URISyntaxException;
 import java.text.DecimalFormat;
 
 import fr.trxyy.alternative.alternative_api.GameEngine;
+import fr.trxyy.alternative.alternative_api.GameMemory;
 import fr.trxyy.alternative.alternative_api.account.AccountType;
 import fr.trxyy.alternative.alternative_api.auth.GameAuth;
 import fr.trxyy.alternative.alternative_api.updater.GameUpdater;
@@ -52,6 +53,9 @@ public class LauncherPanel extends IScreen {
 	private LauncherButton musicButton;
 
 	private Slider musicSlider;
+	private Slider ramSlider;
+
+	private LauncherLabel ramLabel;
 	
 	private LauncherButton closeButton;
 	private LauncherButton reduceButton;
@@ -81,7 +85,7 @@ public class LauncherPanel extends IScreen {
 		this.drawLogo(engine, getResourceLocation().loadImage(engine, "logo.png"), engine.getWidth() / 2 - 165, 100, 330, 100, root, Mover.DONT_MOVE);
 		
 		this.titleLabel = new LauncherLabel(root);
-		this.titleLabel.setText("Tyvalia RP Launcher - 0.5.0d");
+		this.titleLabel.setText("Tyvalia RP Launcher - 0.6.0d");
 		this.titleLabel.setFont(FontLoader.loadFont("Roboto-Light.tff", "Robota Light", 18f));
 		this.titleLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
 		this.titleLabel.setPosition(engine.getWidth() / 2 - 120, -4);
@@ -205,7 +209,6 @@ public class LauncherPanel extends IScreen {
 		this.musicSlider.setVisible(true);
 		this.musicSlider.setLayoutX(engine.getWidth() - 220);
 		this.musicSlider.setLayoutY(engine.getHeight() - 40);
-
 		this.musicSlider.valueProperty().addListener(new ChangeListener<Number>() {
 			@Override
 			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
@@ -214,6 +217,33 @@ public class LauncherPanel extends IScreen {
 		});
 
 		root.getChildren().add(musicSlider);
+
+		this.ramSlider = new Slider();
+		this.ramSlider.setMin(2);
+		this.ramSlider.setMax(10);
+		this.ramSlider.setValue(4);
+		this.ramSlider.setBlockIncrement(1);
+		this.ramSlider.setVisible(true);
+		this.ramSlider.setLayoutX(80);
+		this.ramSlider.setLayoutY(engine.getHeight() - 40);
+		this.ramSlider.valueProperty().addListener(new ChangeListener<Number>() {
+			@Override
+			public void changed(ObservableValue<? extends Number> observable, Number oldValue, Number newValue) {
+				engine.reg(GameMemory.valueOf("RAM_" + newValue.intValue() + "G"));
+				ramLabel.setText("RAM : " + newValue.intValue() + "GB");
+
+			}
+		});
+
+		root.getChildren().add(ramSlider);
+
+		this.ramLabel = new LauncherLabel(root);
+		this.ramLabel.setText("RAM : 4GB");
+		this.ramLabel.setFont(FontLoader.loadFont("Roboto-Light.tff", "Robota Light", 18f));
+		this.ramLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
+		this.ramLabel.setPosition(230, engine.getHeight() - 54);
+		this.ramLabel.setOpacity(0.7);
+		this.ramLabel.setSize(500, 40);
 		
 		this.closeButton = new LauncherButton(root);
 		this.closeButton.setPosition(engine.getWidth() - 35, 2);

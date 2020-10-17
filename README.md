@@ -7,7 +7,7 @@ Launcher officiel de Tyvalia RP
 **Versions :**
 
 - 0.1.0 :
-  - Creation du Launcher
+  - Création du Launcher
 - 0.2.0 *(Version jamais compilée)* :
   - Modifications de l'interface
 - 0.3.0d :
@@ -26,3 +26,6 @@ Launcher officiel de Tyvalia RP
   - Ajout d'un slider pour changer le volume de la musique
   - Le bouton de musique est caché quand on se connecte
   - Ajout d'un check du pseudo pour éviter les pseudos avec des caractères spéciaux
+- 0.6.0d :
+  - Ajout du Changement de la RAM
+  - Autres modifications 
