@@ -29,3 +29,6 @@ Launcher officiel de Tyvalia RP
 - 0.6.0d :
   - Ajout du Changement de la RAM
   - Autres modifications 
+- 1.0.0 :
+  - Passage en version release
+  - Ajout d'une checkbox pour un compte premium ou non

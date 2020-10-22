@@ -26,11 +26,13 @@ import javafx.animation.Timeline;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Pos;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Slider;
 import javafx.scene.layout.Pane;
 import javafx.scene.media.Media;
 import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
+import javafx.scene.paint.Paint;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontPosture;
 import javafx.stage.Stage;
@@ -72,7 +74,9 @@ public class LauncherPanel extends IScreen {
 
 	private Media music;
 	private MediaPlayer musicPlayer;
-	
+
+	private CheckBox premiumCheckbox;
+
 	public LauncherPanel(Pane root, GameEngine engine) {
 		music = new Media(LauncherPanel.class.getResource("/music.wav").toString());
 		musicPlayer = new MediaPlayer(music);
@@ -85,7 +89,7 @@ public class LauncherPanel extends IScreen {
 		this.drawLogo(engine, getResourceLocation().loadImage(engine, "logo.png"), engine.getWidth() / 2 - 165, 100, 330, 100, root, Mover.DONT_MOVE);
 		
 		this.titleLabel = new LauncherLabel(root);
-		this.titleLabel.setText("Tyvalia RP Launcher - 0.6.0d");
+		this.titleLabel.setText("Tyvalia RP Launcher - 1.0.0");
 		this.titleLabel.setFont(FontLoader.loadFont("Roboto-Light.tff", "Robota Light", 18f));
 		this.titleLabel.setStyle("-fx-background-color: transparent; -fx-text-fill: white;");
 		this.titleLabel.setPosition(engine.getWidth() / 2 - 120, -4);
@@ -236,6 +240,26 @@ public class LauncherPanel extends IScreen {
 		});
 
 		root.getChildren().add(ramSlider);
+
+		this.premiumCheckbox = new CheckBox("Connexion Premium");
+		this.premiumCheckbox.setTextFill(Color.WHITE);
+		this.premiumCheckbox.setLayoutX(400);
+		this.premiumCheckbox.setLayoutY(420);
+		this.premiumCheckbox.selectedProperty().addListener(new ChangeListener<Boolean>() {
+			@Override
+			public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
+				if (newValue == Boolean.TRUE) {
+					passwordField.setVisible(true);
+				} else {
+					passwordField.setText("");
+					passwordField.setVisible(false);
+				}
+			}
+		});
+		this.premiumCheckbox.setSelected(true);
+		this.premiumCheckbox.setVisible(true);
+
+		root.getChildren().add(premiumCheckbox);
 
 		this.ramLabel = new LauncherLabel(root);
 		this.ramLabel.setText("RAM : 4GB");
